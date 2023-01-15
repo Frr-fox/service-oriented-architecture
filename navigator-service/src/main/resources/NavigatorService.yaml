@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: SOA Lab №1
+  description: Navigation Service for additional operations
+  contact:
+    name: Olesya Nechkasova
+    email: lesyanechkasova@gmail.com
+  version: '1.0'
+servers:
+  - url: http://localhost:8081/api/v1/navigator
+tags:
+  - name: Navigator API
+paths:
+  /routes/{id-from}/{id-to}/{order-by}:
+    get:
+      summary: Find all the routes between the indicated locations, sort the list according to the given parameter
+      description: Find all the routes between the indicated locations, sort the list according to the given parameter
+      parameters:
+        - name: id-from
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+        - name: id-to
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+        - name: order-by
+          in: path
+          required: true
+          schema:
+            type: string
+            nullable: true
+      tags:
+        - Navigator API
+      responses:
+        '200':
+          description: Returns the all routes between two locations
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: './RouteService.yaml#/components/schemas/Route'
+        '400':
+          description: Invalid parameters supplied
+        '404':
+          description: No routes were found
+        '500':
+          description: Internal server error
+  /route/add/{id-from}/{id-to}/{distance}:
+    post:
+      summary: Add a new route between the specified locations
+      description: Add a new route between the specified locations
+      parameters:
+        - name: id-from
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+        - name: id-to
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+        - name: distance
+          in: path
+          required: true
+          schema:
+            type: number
+            format: long
+            minimum: 0
+            exclusiveMinimum: true
+            example: 1
+      tags:
+        - Navigator API
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Route'
+      responses:
+        '200':
+          description: Route was added successfully
+        '400':
+          description: Invalid parameters supplied
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    Route:
+      title: RouteDTO
+      type: object
+      required:
+        - id
+      properties:
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: Route#1
+        coordinates:
+          allOf:
+            - $ref: './RouteService.yaml#/components/schemas/Coordinates'
+            - nullable: false

@@ -1,0 +1,415 @@
+openapi: 3.0.3
+info:
+  title: SOA Lab №1
+  description: Route Service for managing the collection of objects
+  contact:
+    name: Olesya Nechkasova
+    email: lesyanechkasova@gmail.com
+  version: '1.0'
+servers:
+  - url: http://localhost:8081/api/v1
+tags:
+  - name: Route API Base
+paths:
+  /routes/{routeId}:
+    get:
+      tags:
+        - Route API Base
+      summary: Return the element "Route" by Id
+      operationId: getRouteByIdUsingGET
+      parameters:
+        - name: routeId
+          in: path
+          description: Unique identification of an element
+          required: true
+          style: simple
+          schema:
+            type: number
+            format: long
+            example: 1000000
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Route'
+        '404':
+          description: Routes with the specified Id not found
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - Route API Base
+      summary: Update the element "Route" by Id
+      operationId: updateRouteByIdUsingPUT
+      parameters:
+        - name: routeId
+          in: path
+          description: Unique identification of an element
+          required: true
+          style: simple
+          schema:
+            type: number
+            format: long
+            example: 1000000
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Route'
+      responses:
+        '200':
+          description: Resource update successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Route'
+        '201':
+          description: Created a new resource successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Route'
+        '400':
+          description: Input value is invalid or incorrect
+        '404':
+          description: Routes with the specified Id not found
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - Route API Base
+      summary:  Delete the element "Route" by Id
+      operationId: deleteRouteByIdUsingDELETE
+      parameters:
+        - name: routeId
+          in: path
+          description: Unique identification of an element
+          required: true
+          style: simple
+          schema:
+            type: number
+            format: long
+      responses:
+        '202':
+          description: OK
+        '404':
+          description: Routes with the specified Id not found
+        '500':
+          description: Internal server error
+  /routes:
+    post:
+      tags:
+        - Route API Base
+      summary: Create a new element "Route"
+      operationId: createRouteUsingPOST
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Route'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Input value is invalid or incorrect
+        '500':
+          description: Internal server error
+    get:
+      tags:
+        - Route API Base
+      summary: Return an array of elements "Route"
+      operationId: getRouteUsingGET
+      parameters:
+        - name: sort
+          in: query
+          description: Array of fields that are used for sorting. The "-" sign means sorting in descending order. If queries and deletion order are provided for one field (with and without "-"), an error response will be returned.
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              default: id
+              enum:
+                - id
+                - name
+                - coordinates.x
+                - coordinates.y
+                - creationDate
+                - from.x
+                - from.y
+                - from.z
+                - to.x
+                - to.y
+                - to.z
+                - to.name
+                - distance
+        - name: filter
+          in: query
+          required: false
+          description: Array of fields used for filtering. Each element must contain the name of the field and the filtering method in parentheses, as well as the value that will be used for filtering. If the value type is incorrect, an error response will be returned.
+          schema:
+            type: array
+            items:
+              type: string
+              example: id[eq]=1
+              pattern: '^(id|name|coordinates\.x|coordinates\.y|creationDate|from\.x|from\.y|from\.z|from\.name|to\.x|to\.y|to\.z|to.\name|distance)\[(eq|ne|gt|lt|lte|gte)\]=.+$'
+          style: deepObject
+          explode: true
+        - name: page
+          in: query
+          required: false
+          description: Specifies the page number to be paginated. If used without the "pageSize" parameter, the page size will be 10. If none of the parameters "page" or "pageSize" is used, then all Flats will be returned.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: false
+          description: The specified page size for pagination. If used without the "page" parameter, the first page will be displayed. If none of the parameters "page" or "pageSize" is used, then all Flats will be returned.
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        '500':
+          description: Internal server error
+  /routes/to/min:
+    get:
+      tags:
+        - Route API Additional
+      summary: Return one (any) object of type "Route", the value of the field "To" of which is minimal
+      operationId: getRouteWithMinToUsingGET
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Route'
+        '404':
+          description: No routes were found
+        '500':
+          description: Internal server error
+  /routes/distance/greater-than/{distanceValue}/count:
+    get:
+      tags:
+        - Route API Additional
+      summary: Return the number of objects whose distance field value is greater than the specified value
+      operationId: getAmountOfRoutesWithDistanceGreaterThanValueUsingGET
+      parameters:
+        - name: distanceValue
+          in: path
+          description: Distance value of an element Route
+          required: true
+          style: simple
+          schema:
+            type: number
+            format: long
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: integer
+                format: int64
+        '500':
+          description: Internal server error
+  /routes/distance/greater-than/{distanceValue}:
+    get:
+      tags:
+        - Route API Additional
+      summary: Return an array of objects whose distance field value is greater than the specified value
+      operationId: getRoutesWithDistanceGreaterThanValueUsingGET
+      parameters:
+        - name: distanceValue
+          in: path
+          description: Distance value of an element Route
+          required: true
+          style: simple
+          schema:
+            type: number
+            format: long
+        - name: sort
+          in: query
+          description: Array of fields that are used for sorting. The "-" sign means sorting in descending order. If queries and deletion order are provided for one field (with and without "-"), an error response will be returned.
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              default: id
+              enum:
+                - id
+                - name
+                - coordinates.x
+                - coordinates.y
+                - creationDate
+                - from.x
+                - from.y
+                - from.z
+                - to.x
+                - to.y
+                - to.z
+                - to.name
+                - distance
+        - name: filter
+          in: query
+          required: false
+          description: Array of fields used for filtering. Each element must contain the name of the field and the filtering method in parentheses, as well as the value that will be used for filtering. If the value type is incorrect, an error response will be returned.
+          schema:
+            type: array
+            items:
+              type: string
+              example: id[eq]=1
+              pattern: '^(id|name|coordinates\.x|coordinates\.y|creationDate|from\.x|from\.y|from\.z|from\.name|to\.x|to\.y|to\.z|to.\name|distance)\[(eq|ne|gt|lt|lte|gte)\]=.+$'
+          style: deepObject
+          explode: true
+        - name: page
+          in: query
+          required: false
+          description: Specifies the page number to be paginated. If used without the "pageSize" parameter, the page size will be 10. If none of the parameters "page" or "pageSize" is used, then all Flats will be returned.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: false
+          description: The specified page size for pagination. If used without the "page" parameter, the first page will be displayed. If none of the parameters "page" or "pageSize" is used, then all Flats will be returned.
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Route'
+        '404':
+          description: No routes were found
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    Coordinates:
+      title: Coordinates
+      type: object
+      properties:
+        x:
+          type: number
+          format: long
+          example: 500
+        y:
+          type: number
+          format: double
+          example: 500.5
+    Location:
+      title: Location
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          nullable: false
+          description: must be positive, unique and autogenerated
+          example: 1
+        x:
+          type: number
+          format: float
+          nullable: false
+          example: 10.5
+        y:
+          type: number
+          format: long
+          example: 10
+        z:
+          type: integer
+          format: int64
+          nullable: false
+          example: 10
+    NamedLocation:
+      title: Location
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          nullable: false
+          description: must be positive, unique and autogenerated
+          example: 1
+        x:
+          type: number
+          format: Long
+          nullable: false
+          example: 10
+        y:
+          type: integer
+          format: int64
+          example: 10
+        z:
+          type: number
+          format: Long
+          nullable: false
+          example: 10
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: Place
+    Route:
+      title: Route
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+          format: long
+          description: must be positive, unique and autogenerated
+          example: 1
+        name:
+          type: string
+          nullable: false
+          minLength: 1
+          example: Route#1
+        coordinates:
+          allOf:
+            - $ref: '#/components/schemas/Coordinates'
+            - nullable: false
+        creationDate:
+          type: string
+          format: date-time
+          nullable: false
+          example: 2022-09-19T10:30:00
+          description: must be autogenerated
+        from:
+          allOf:
+            - $ref: '#/components/schemas/Location'
+            - nullable: false
+        to:
+          allOf:
+            - $ref: '#/components/schemas/NamedLocation'
+            - nullable: false
+        distance:
+          type: number
+          format: long
+          description: must be more than 1
+          example: 2

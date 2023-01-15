@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="navigator-service:war">
+    <output-path>$PROJECT_DIR$/navigator-service/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>navigator-service</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="navigator-service-1.0.war">
+      <element id="artifact" artifact-name="navigator-service:war exploded" />
+    </root>
+  </artifact>
+</component>

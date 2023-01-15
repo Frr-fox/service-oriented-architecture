@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: SOA Lab №1
+  description: Trip Service for buying tickets on chosen route
+  contact:
+    name: Olesya Nechkasova
+    email: lesyanechkasova@gmail.com
+  version: '1.0'
+servers:
+  - url: http://localhost:8081/api/v1/trip
+tags:
+  - name: Trip API
+paths:
+  /tickets/{routeId}:
+    post:
+      tags:
+        - Trip API
+      summary: Buy ticket on specified route with personal data
+      operationId: createTicketUsingPOST
+      parameters:
+        - name: routeId
+          in: path
+          description: Unique identification of an element Route
+          required: true
+          style: simple
+          schema:
+            type: number
+            format: long
+            example: 1000000
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Passenger'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Input value is invalid or incorrect
+        '403':
+          description: Not enough balance
+        '404':
+          description: Routes with the specified Id not found
+        '500':
+          description: Internal server error
+  /tickets/{passengerId}:
+    get:
+      tags:
+        - Trip API
+      summary: Return the elements "Ticket" for passengers with Id
+      operationId: getTicketsByPassengersIdUsingGET
+      parameters:
+        - name: passengerId
+          in: path
+          description: Unique identification of an element Passenger
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 12345A
+        - name: sort
+          in: query
+          description: Array of fields that are used for sorting. The "-" sign means sorting in descending order. If queries and deletion order are provided for one field (with and without "-"), an error response will be returned.
+          required: false
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+              default: id
+              enum:
+                - id
+                - direction.id
+                - direction.name
+                - direction.coordinates.x
+                - direction.coordinates.y
+                - direction.creationDate
+                - direction.from.x
+                - direction.from.y
+                - direction.from.z
+                - direction.to.x
+                - direction.to.y
+                - direction.to.z
+                - direction.to.name
+                - direction.distance
+                - buyDate
+                - price
+        - name: filter
+          in: query
+          required: false
+          description: Array of fields used for filtering. Each element must contain the name of the field and the filtering method in parentheses, as well as the value that will be used for filtering. If the value type is incorrect, an error response will be returned.
+          schema:
+            type: array
+            items:
+              type: string
+              example: id[eq]=1
+              pattern: '^(id|direction\.id|direction\.name|direction\.coordinates\.x|direction\.coordinates\.y|direction\.creationDate|direction\.from\.x|direction\.from\.y|direction\.from\.z|direction\.to\.x|direction\.to\.y|direction\.to\.z|direction\.to\.name|direction\.distance|buyDate|price)\[(eq|ne|gt|lt|lte|gte)\]=.+$'
+          style: deepObject
+          explode: true
+        - name: page
+          in: query
+          required: false
+          description: Specifies the page number to be paginated. If used without the "pageSize" parameter, the page size will be 10. If none of the parameters "page" or "pageSize" is used, then all Flats will be returned.
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - name: pageSize
+          in: query
+          required: false
+          description: The specified page size for pagination. If used without the "page" parameter, the first page will be displayed. If none of the parameters "page" or "pageSize" is used, then all Flats will be returned.
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '201':
+          description: Created a new resource successfully
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        '404':
+          description: Passengers with the specified Id not found
+        '500':
+          description: Internal server error
+  /tickets/{id}:
+    delete:
+      tags:
+        - Trip API
+      summary:  Delete the element "Ticket" by Id
+      operationId: deleteTicketByIdUsingDELETE
+      parameters:
+        - name: id
+          in: path
+          description: Unique identification of an element "Ticket"
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: 1
+      responses:
+        '202':
+          description: OK
+        '404':
+          description: Ticket with the specified Id not found
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    Passenger:
+      title: Passenger
+      type: object
+      properties:
+        id:
+          type: string
+          example: 12345A
+          minLength: 6
+        name:
+          type: string
+          example: Olesya
+        surname:
+          type: string
+          example: Nechkasova
+        birthDate:
+          type: string
+          format: date
+          nullable: false
+          example: 2001-09-19
+    Ticket:
+      title: Ticket
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+          example: 1
+        direction:
+          allof:
+            $ref: './RouteService.yaml#/components/schemas/Route'
+        buyDate:
+          type: string
+          format: date-time
+          example: 2022-09-19T10:30:00
+          description: must be autogenerated
+        price:
+          type: number
+          format: double
+          example: 1699.99
