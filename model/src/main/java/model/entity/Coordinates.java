@@ -35,4 +35,15 @@ public class Coordinates implements Serializable {
         this.x_coordinate = xCoordinate;
         this.y_coordinate = yCoordinate;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object.getClass() != Coordinates.class) {
+            return false;
+        }
+        Coordinates coordinates = (Coordinates) object;
+        return (this.getX_coordinate() == coordinates.getX_coordinate() &&
+                this.getY_coordinate() == coordinates.getY_coordinate()) ||
+                (this.getCoordinates_id() == coordinates.getCoordinates_id());
+    }
 }

@@ -14,7 +14,7 @@ public interface NavigatorService {
                                                           Integer page,
                                                           Integer limit);
 
-    void createRouteBetweenLocations(Long idLocationFrom,
+    boolean createRouteBetweenLocations(Long idLocationFrom,
                                      Long idLocationTo,
                                      Long distance,
                                      RouteCreateBetweenLocationsRequest request);

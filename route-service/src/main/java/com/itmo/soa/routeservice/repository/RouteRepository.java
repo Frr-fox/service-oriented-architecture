@@ -1,6 +1,7 @@
 package com.itmo.soa.routeservice.repository;
 
 import model.entity.Route;
+import model.entity.Ticket;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -56,11 +57,24 @@ public class RouteRepository {
     }
 
     public void removeById(Long id) {
-        provider.getEntityManager().getTransaction().begin();
         CriteriaBuilder builder = provider.getEntityManager().getCriteriaBuilder();
+
+        CriteriaQuery<Ticket> criteriaQuery = builder.createQuery(Ticket.class);
+        criteriaQuery.select(criteriaQuery.from(Ticket.class));
+        List<Ticket> tickets = provider.getEntityManager().createQuery(criteriaQuery).getResultList();
+        CriteriaDelete<Ticket> criteriaDeleteTickets = builder.createCriteriaDelete(Ticket.class);
+        Root<Ticket> rootTicket = criteriaDeleteTickets.from(Ticket.class);
+        if (!tickets.isEmpty()) {
+            criteriaDeleteTickets.where(builder.equal(rootTicket.get("direction"), id));
+        }
         CriteriaDelete<Route> criteriaDelete = builder.createCriteriaDelete(Route.class);
         Root<Route> root = criteriaDelete.from(Route.class);
         criteriaDelete.where(builder.equal(root.get("id"), id));
+
+        provider.getEntityManager().getTransaction().begin();
+        if (!tickets.isEmpty()) {
+            provider.getEntityManager().createQuery(criteriaDeleteTickets).executeUpdate();
+        }
         provider.getEntityManager().createQuery(criteriaDelete).executeUpdate();
         provider.getEntityManager().getTransaction().commit();
     }

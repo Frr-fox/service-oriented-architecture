@@ -1,6 +1,15 @@
 import {
-    SET_MODAL_TYPE, SET_TAB_NUMBER, SET_IS_MODAL_OPEN, SET_IS_ID_HIDDEN,
-    SET_IS_DATE_HIDDEN, SET_IS_BETWEEN_MODAL, SET_INSTANCE, DATA_FAILURE, SET_DATA, NEED_REFRESH
+    SET_MODAL_TYPE,
+    SET_TAB_NUMBER,
+    SET_IS_MODAL_OPEN,
+    SET_IS_ID_HIDDEN,
+    SET_IS_DATE_HIDDEN,
+    SET_IS_BETWEEN_MODAL,
+    SET_INSTANCE,
+    DATA_FAILURE,
+    SET_DATA,
+    NEED_REFRESH,
+    SET_IS_TICKET_MODAL_OPEN
 } from '../action/pageAction'
 
 export const initialInstance = {
@@ -23,6 +32,7 @@ const initialState = {
     data: [],
     need_refresh: false,
     is_modal_open: false,
+    is_ticket_modal_open: false,
     is_id_hidden: true,
     is_date_hidden: true,
     is_between_modal: true,
@@ -34,6 +44,8 @@ export function pageReducer(state = initialState, action) {
             return {...state, modal_type: action.payload}
         case SET_IS_MODAL_OPEN:
             return {...state, is_modal_open: action.payload}
+        case SET_IS_TICKET_MODAL_OPEN:
+            return {...state, is_ticket_modal_open: action.payload}
         case SET_IS_ID_HIDDEN:
             return {...state, is_id_hidden: action.payload}
         case SET_IS_DATE_HIDDEN:

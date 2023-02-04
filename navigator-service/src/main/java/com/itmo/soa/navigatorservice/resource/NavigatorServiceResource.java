@@ -38,7 +38,7 @@ public class NavigatorServiceResource {
                                                            @QueryParam("page") Integer page,
                                                            @QueryParam("limit") Integer limit) {
         if (!validateBetweenLocationParameters(idLocationFrom, idLocationTo, sortCondition, page, limit)) {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(400).entity(ErrorDTO.builder()
                             .code(400)
                             .message("Invalid parameters supplied")
                             .time(LocalDateTime.now())
@@ -56,7 +56,7 @@ public class NavigatorServiceResource {
                     .entity(result)
                     .build();
         } else {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(404).entity(ErrorDTO.builder()
                             .code(404)
                             .message("No routes were found")
                             .time(LocalDateTime.now())
@@ -74,11 +74,19 @@ public class NavigatorServiceResource {
                                                 @PathParam("distance") Long distance,
                                                 RouteCreateBetweenLocationsRequest request) {
         if (idLocationFrom > 0 && idLocationTo > 0 && request.validate()) {
-            navigatorService.createRouteBetweenLocations(idLocationFrom, idLocationTo, distance, request);
-            return Response.ok().build();
+            if (navigatorService.createRouteBetweenLocations(idLocationFrom, idLocationTo, distance, request)) {
+                return Response.ok().build();
+            } else {
+                return Response.status(404).entity(ErrorDTO.builder()
+                                .code(404)
+                                .message("Locations not found")
+                                .time(LocalDateTime.now())
+                                .build())
+                        .build();
+            }
         } else {
             logger.warn("Validation failed");
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(400).entity(ErrorDTO.builder()
                             .code(400)
                             .message("Invalid parameters supplied")
                             .time(LocalDateTime.now())

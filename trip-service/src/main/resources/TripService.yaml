@@ -11,22 +11,12 @@ servers:
 tags:
   - name: Trip API
 paths:
-  /tickets/{routeId}:
+  /tickets:
     post:
       tags:
         - Trip API
       summary: Buy ticket on specified route with personal data
       operationId: createTicketUsingPOST
-      parameters:
-        - name: routeId
-          in: path
-          description: Unique identification of an element Route
-          required: true
-          style: simple
-          schema:
-            type: number
-            format: long
-            example: 1000000
       requestBody:
         content:
           'application/json':

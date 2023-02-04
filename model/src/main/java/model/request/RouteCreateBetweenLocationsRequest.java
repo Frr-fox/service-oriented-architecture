@@ -1,9 +1,6 @@
 package model.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import model.entity.Coordinates;
 
 import java.io.Serializable;
@@ -11,6 +8,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class RouteCreateBetweenLocationsRequest implements Serializable {
     private String name; //Поле не может быть null, Строка не может быть пустой
     @NonNull

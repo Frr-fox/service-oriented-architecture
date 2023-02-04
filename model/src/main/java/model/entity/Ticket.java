@@ -1,19 +1,19 @@
 package model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "ticket")
+@Table(name = "ticket", uniqueConstraints = { @UniqueConstraint(columnNames = { "route_id", "departure_date", "place" }) })
 public class Ticket implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence")
@@ -22,13 +22,22 @@ public class Ticket implements Serializable {
     private long id;
 
     @NonNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "passenger_id")
+    private Passenger passenger;
+
+    @NonNull
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "route_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Route direction;
 
     @NonNull
-    @Column(name = "buy_date")
-    private LocalDateTime buyDate;
+    @Column(name = "departure_date")
+    private LocalDateTime departureDate;
+
+    @Column(name = "place")
+    private String place;
 
     @Column(name = "price")
     private double price;

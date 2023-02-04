@@ -4,9 +4,15 @@ import lombok.*;
 
 import javax.persistence.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -42,6 +48,10 @@ public class Route implements Serializable {
 
     @Column(name = "distance")
     long distance; //Значение поля должно быть больше 1
+
+    @OneToMany(mappedBy = "direction", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    List<Ticket> ticketIds = new ArrayList<>();
 
     public Route(String name, Coordinates coordinates, Location from, NamedLocation to, long distance) {
         this.name = name;

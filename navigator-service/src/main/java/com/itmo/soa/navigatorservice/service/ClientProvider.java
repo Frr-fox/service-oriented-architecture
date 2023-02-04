@@ -6,9 +6,21 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class ClientProvider {
-    private Client client = ClientBuilder.newClient();
+    Client client = null;
+//    private Client client = ClientBuilder.newClient();
+    public void init() {
+        ClientBuilder builder = ClientBuilder.newBuilder();
+        builder.sslContext(ConnectionFactory.getSslContext());
+        builder.hostnameVerifier(ConnectionFactory.getHostnameVerifier());
+        client = builder.build();
+    }
 
     public Client getClient() {
+        if (client == null) {
+            init();
+        }
         return client;
     }
+
+
 }

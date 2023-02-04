@@ -1,6 +1,6 @@
 import {Button, Col, Divider, InputNumber, Layout, notification, Row, Space} from "antd";
 import React, {useEffect, useState} from 'react';
-import TableRoute from "../component/TableRoute";
+import TableRoute from "../component/tables/TableRoute";
 import {useDispatch, useSelector} from "react-redux";
 import {
     needRefresh,
@@ -35,13 +35,8 @@ export const RoutePage = () => {
         } else {
             api.get('/routes/' + requiredId)
                 .then(res => {
-                    console.log(res.data);
                     if (res.data.code !== undefined) {
-                        if (res.data.code === 404) {
-                            dispatch(setMessage(res.data.message));
-                        } else {
-                            dispatch(setMessage("Something go wrong"));
-                        }
+                        dispatch(setMessage("Something goes wrong"));
                         openNotification('error');
                     } else {
                         dispatch(setInstance(res.data));
@@ -50,7 +45,7 @@ export const RoutePage = () => {
                     }
                 })
                 .catch(err => {
-                    dispatch(setMessage(err.message));
+                    dispatch(setMessage(err.response.data.message));
                     openNotification('error');
                 })
         }
@@ -76,12 +71,12 @@ export const RoutePage = () => {
                     openNotification('success');
                     dispatch(needRefresh(true));
                 } else {
-                    dispatch(setMessage(res.data.message));
+                    dispatch(setMessage("Something goes wrong"));
                     openNotification('error');
                 }
             })
             .catch(err => {
-                dispatch(setMessage(err.message));
+                dispatch(setMessage(err.response.data.message));
                 openNotification('error');
             })
     }
@@ -97,17 +92,13 @@ export const RoutePage = () => {
                         dispatch(setModalType(ModalType.SHOW));
                         syncModalType();
                     } else {
-                        dispatch(setMessage(res.data.message));
-                        if (res.data.code === 404) {
-                            openNotification('warning');
-                        } else {
-                            openNotification('error');
-                        }
+                        dispatch(setMessage("Something goes wrong"));
+                        openNotification('error');
                     }
                 }
             )
             .catch(err => {
-                dispatch(setMessage(err.message));
+                dispatch(setMessage(err.response.data.message));
                 openNotification('error');
         })
     }
@@ -118,21 +109,17 @@ export const RoutePage = () => {
                 res => {
                     if (res.status === 200 && res.data.code === undefined) {
                         dispatch(setData(res.data));
-                        dispatch(needRefresh(true));
+                        dispatch(needRefresh('partly'));
                         dispatch(setMessage("Routes with distance greater than " + distance + " are in the table. To show all routes refresh data"))
                         openNotification('info');
                     } else {
-                        dispatch(setMessage(res.data.message));
-                        if (res.data.code === 404) {
-                            openNotification('warning');
-                        } else {
-                            openNotification('error');
-                        }
+                        dispatch(setMessage("Something goes wrong"));
+                        openNotification('error');
                     }
                 }
             )
             .catch(err => {
-                dispatch(setMessage(err.message));
+                dispatch(setMessage(err.response.data.message));
                 openNotification('error');
             })
     }
@@ -143,14 +130,15 @@ export const RoutePage = () => {
                 res => {
                     if (res.status === 200) {
                         dispatch(setMessage("Routes with distance greater than " + distance + " is " + res.data + "!"));
+                        openNotification('success');
                     } else {
-                        dispatch(setMessage("Something go wrong"));
+                        dispatch(setMessage("Something goes wrong"));
+                        openNotification('error');
                     }
-                    openNotification('success');
                 }
             )
             .catch(err => {
-                dispatch(setMessage(err.message));
+                dispatch(setMessage(err.response.data.message));
                 openNotification('error');
             })
     }

@@ -1,10 +1,8 @@
 import {Button, Col, Layout, Row, Space} from "antd";
-import TableRoute from "../component/TableRoute";
 import FormRouteBetweenLocations from "../component/forms/FormRouteBetweenLocations";
 import {FormRoute} from "../component/forms/FormRoute";
 import {ModalType} from "../utils/ModalType";
 import {
-    setInstance,
     setIsBetweenModal,
     setIsDateHidden,
     setIsIdHidden,
@@ -13,6 +11,7 @@ import {
 } from "../store/action/pageAction";
 import {useDispatch, useSelector} from "react-redux";
 import {store} from "../store/store";
+import TableRoute from "../component/tables/TableRoute";
 
 
 const NavigationPage = () => {

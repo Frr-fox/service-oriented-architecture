@@ -2,6 +2,7 @@ import axios from "axios";
 
 export const SET_MODAL_TYPE = 'SET_MODAL_TYPE'
 export const SET_IS_MODAL_OPEN = 'SET_IS_MODAL_OPEN'
+export const SET_IS_TICKET_MODAL_OPEN = 'SET_IS_TICKET_MODAL_OPEN'
 export const SET_IS_ID_HIDDEN = 'SET_IS_ID_HIDDEN'
 export const SET_IS_DATE_HIDDEN = 'SET_IS_DATE_HIDDEN'
 export const SET_IS_BETWEEN_MODAL = 'SET_IS_BETWEEN_MODAL'
@@ -21,6 +22,13 @@ export function setModalType(modal_type) {
 export function setIsModalOpen(isOpen) {
     return {
         type: SET_IS_MODAL_OPEN,
+        payload: isOpen
+    }
+}
+
+export function setIsTicketModalOpen(isOpen) {
+    return {
+        type: SET_IS_TICKET_MODAL_OPEN,
         payload: isOpen
     }
 }

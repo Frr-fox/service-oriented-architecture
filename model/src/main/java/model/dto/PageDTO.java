@@ -12,15 +12,15 @@ public class PageDTO implements Serializable {
      * Номер страницы
      * */
     @NonNull
-    private int page = 1;
+    private Integer page = 1;
 
     /**
      * Максимальное количество элементов на странице
      * */
     @NonNull
-    private int limit = 5;
+    private Integer limit = 5;
 
-    public PageDTO(@NonNull int page, @NonNull int limit) {
+    public PageDTO(@NonNull Integer page, @NonNull Integer limit) {
         this.page = page;
         this.limit = limit;
     }

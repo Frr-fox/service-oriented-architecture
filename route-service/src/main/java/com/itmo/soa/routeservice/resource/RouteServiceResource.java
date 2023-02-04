@@ -1,9 +1,9 @@
 package com.itmo.soa.routeservice.resource;
 
-import com.itmo.soa.routeservice.exception.RouteNotFoundException;
 import com.itmo.soa.routeservice.service.RouteService;
 import model.dto.ErrorDTO;
 import model.dto.PageDTO;
+import model.dto.RouteDTO;
 import model.dto.filter.RouteFilterDTO;
 import model.request.RouteCreateRequest;
 import model.request.RouteUpdateRequest;
@@ -29,7 +29,7 @@ public class RouteServiceResource {
         if (routeService.createRoute(request)) {
             return Response.ok().build();
         } else {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(404).entity(ErrorDTO.builder()
                             .code(404)
                             .message("Routes with the specified ID not found")
                             .time(LocalDateTime.now())
@@ -45,7 +45,7 @@ public class RouteServiceResource {
         logger.info("Request to get object by id");
         var result = routeService.getRouteById(routeId);
         if (result == null) {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(404).entity(ErrorDTO.builder()
                             .code(404)
                             .message("Routes with the specified ID not found")
                             .time(LocalDateTime.now())
@@ -67,15 +67,19 @@ public class RouteServiceResource {
                 if (routeService.updateRouteById(routeId, request)) {
                     return Response.ok().entity(routeService.getRouteById(routeId)).build();
                 } else {
-                    return Response.ok().entity(ErrorDTO.builder()
-                                    .code(404)
-                                    .message("Routes with the specified ID not found")
-                                    .time(LocalDateTime.now())
-                                    .build())
+                    return Response.status(404).entity(
+                            RouteDTO.builder()
+                                    .error(ErrorDTO.builder()
+                                            .code(404)
+                                            .message("Routes with the specified ID not found")
+                                            .time(LocalDateTime.now())
+                                            .build()
+                                    )
+                            )
                             .build();
                 }
         } else {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(400).entity(ErrorDTO.builder()
                             .code(400)
                             .message("Input value is invalid or incorrect")
                             .time(LocalDateTime.now())
@@ -92,7 +96,7 @@ public class RouteServiceResource {
         if (routeService.deleteRouteById(routeId)) {
             return Response.ok().build();
         } else {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(404).entity(ErrorDTO.builder()
                             .code(404)
                             .message("Routes with the specified ID not found")
                             .time(LocalDateTime.now())

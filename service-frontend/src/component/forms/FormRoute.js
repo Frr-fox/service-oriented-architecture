@@ -10,18 +10,15 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import {
-    needRefresh, setData,
+    needRefresh,
     setInstance,
-    setIsBetweenModal,
-    setIsDateHidden,
-    setIsIdHidden,
     setIsModalOpen, setMessage,
     setModalType
 } from "../../store/action/pageAction";
-import {connect, useDispatch, useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {store} from "../../store/store";
 import {initialInstance} from "../../store/reducer/pageReducer";
-import {addQueryParams, ModalType} from "../../utils/ModalType";
+import {ModalType} from "../../utils/ModalType";
 import api from "../../service/axiosInstance";
 import apiRemote from "../../service/axiosRemoteInstance";
 
@@ -36,27 +33,27 @@ export const FormRoute = () => {
 
     useEffect(() => {
         form.setFieldsValue({
-            id: store.getState().page.instance.id,
-            name: store.getState().page.instance.name,
-            x: store.getState().page.instance.x,
-            y: store.getState().page.instance.y,
-            creationDate: store.getState().page.instance.creationDate,
-            fromX: store.getState().page.instance.fromX,
-            fromY: store.getState().page.instance.fromY,
-            fromZ: store.getState().page.instance.fromZ,
-            toName: store.getState().page.instance.toName,
-            toX: store.getState().page.instance.toX,
-            toY: store.getState().page.instance.toY,
-            toZ: store.getState().page.instance.toZ,
-            distance: store.getState().page.instance.distance,
+            id: page.instance.id,
+            name: page.instance.name,
+            x: page.instance.x,
+            y: page.instance.y,
+            creationDate: page.instance.creationDate,
+            fromX: page.instance.fromX,
+            fromY: page.instance.fromY,
+            fromZ: page.instance.fromZ,
+            toName: page.instance.toName,
+            toX: page.instance.toX,
+            toY: page.instance.toY,
+            toZ: page.instance.toZ,
+            distance: page.instance.distance,
         });
-    }, [store.getState().page.instance])
+    }, [page.instance])
 
     useEffect(() => {
         if (page.modal_type === ModalType.ADD || page.modal_type === ModalType.BETWEEN) {
             handleReset();
         }
-    }, [store.getState().page.modal_type])
+    }, [page.modal_type])
 
     const closeModal = () => {
         dispatch(setModalType(false));
@@ -64,38 +61,48 @@ export const FormRoute = () => {
     }
 
     const handleOk = () => {
-        switch (page.modal_type) {
-            case ModalType.UPDATE:
-                submitUpdate();
-                break;
-            case ModalType.ADD:
-                submitAdd();
-                break;
-            case ModalType.BETWEEN:
-                submitAddBetween();
-                break;
-            default:
-                break;
+        form.submit();
+        // switch (page.modal_type) {
+        //     case ModalType.UPDATE:
+        //         form.submit();
+        //         if (form.isFieldsValidating("name", "x", "y", "fromX", "fromY", "fromZ", "distance")) {
+        //             submitUpdate();
+        //         }
+        //         break;
+        //     case ModalType.ADD:
+        //         form.submit();
+        //         if (form.isFieldsValidating("name", "x", "y", "fromX", "fromY", "fromZ", "distance")) {
+        //             submitAdd();
+        //         }
+        //         break;
+        //     case ModalType.BETWEEN:
+        //         form.submit();
+        //         if (form.isFieldsValidating("name", "x", "y", "fromId", "toId", "distance")) {
+        //             submitAddBetween();
+        //         }
+        //         break;
+        //     default:
+        //         break;
         }
         // closeModal();
-    };
 
     const submitUpdate = () => {
         api.put('/routes/' + page.instance.id, page.instance)
             .then(res => {
                 if (res.status === 200 && res.data.code === undefined) {
-                    dispatch(setMessage("Route with ID = " + page.instance.id + " was successfully updated!\nRefresh the table."));
+                    let message ="Route with ID = " + page.instance.id + " was successfully updated!";
+                    dispatch(setMessage(message));
                     dispatch(needRefresh(true));
-                    openNotification('success');
+                    openNotification('success', message);
                 } else {
                     dispatch(setMessage(res.data.message));
-                    openNotification('error');
+                    openNotification('error', res.data.message);
                 }
                 closeModal();
             })
             .catch(err => {
-                dispatch(setMessage(err.message));
-                openNotification('error');
+                dispatch(setMessage(err.response.data.message));
+                openNotification('error', err.response.data.message);
             })
     }
 
@@ -117,20 +124,19 @@ export const FormRoute = () => {
             .then(res => {
                 console.log(res);
                 if (res.status === 200 && res.data.code === undefined) {
-                    dispatch(setMessage("Route successfully added! Refresh the table."));
-                    openNotification('success');
+                    let message = "Route successfully added!";
+                    dispatch(setMessage(message));
+                    openNotification('success', message);
                     dispatch(needRefresh(true));
                 } else {
-                    console.log(res);
                     dispatch(setMessage(res.data.message));
-                    openNotification('error');
+                    openNotification('error', res.data.message);
                 }
                 closeModal();
-
             })
             .catch(err => {
-                dispatch(setMessage(err.message));
-                openNotification('error');
+                dispatch(setMessage(err.response.data.message));
+                openNotification('error', err.response.data.message);
             })
     }
 
@@ -140,18 +146,19 @@ export const FormRoute = () => {
             page.instance.distance, data)
             .then(res => {
                 if (res.status === 200 && res.data.code === undefined) {
-                    dispatch(setMessage("Route successfully added! Refresh the table."));
-                    openNotification('success');
+                    let message = "Route successfully added!";
+                    dispatch(setMessage(message));
+                    openNotification('success', message);
                     dispatch(needRefresh(true));
                 } else {
                     dispatch(setMessage(res.data.message));
-                    openNotification('error');
+                    openNotification('error', res.data.message);
                 }
                 closeModal();
             })
             .catch(err => {
-                dispatch(setMessage(err.message));
-                openNotification('error');
+                dispatch(setMessage(err.response.data.message));
+                openNotification('error', err.response.data.message);
             })
     }
 
@@ -168,11 +175,33 @@ export const FormRoute = () => {
         // console.log(page.instance);
     };
 
-    const openNotification = (type) => {
+    const openNotification = (type, message) => {
         notificationApi[type]({
             message: 'Notification',
-            description: page.msg,
+            description: message,
         });
+    };
+
+    const onFinish = (values) => {
+        console.log('Success:', values);
+        switch (page.modal_type) {
+            case ModalType.UPDATE:
+                submitUpdate();
+                break;
+            case ModalType.ADD:
+                submitAdd();
+                break;
+            case ModalType.BETWEEN:
+                submitAddBetween();
+                break;
+            default:
+                break;
+        }
+        closeModal();
+    }
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
     };
 
         return (
@@ -190,7 +219,10 @@ export const FormRoute = () => {
                        ]}
                 >
                     <Form form={form} labelCol={{span: 4}} wrapperCol={{span: 14}} layout="horizontal"
-                          onValuesChange={onFormLayoutChange}>
+                          onValuesChange={onFormLayoutChange}
+                          onFinish={onFinish}
+                          onFinishFailed={onFinishFailed}
+                          autoComplete="off">
                         <Form.Item label='ID:' name='id' hidden={page.is_id_hidden} shouldUpdate={true}>
                             <InputNumber min={1}
                                          value={store.getState().page.instance.id}
@@ -199,7 +231,11 @@ export const FormRoute = () => {
                                          }}
                                          disabled/>
                         </Form.Item>
-                        <Form.Item label="Name:" name='name' required>
+                        <Form.Item label="Name:" name='name'
+                                   rules={[{
+                                               required: true,
+                                               message: 'Please input name!',
+                                           }]}>
                             <Input placeholder='Name' initialValue={store.getState().page.instance.name}
                                    value={store.getState().page.instance.name}
                                    onChange={e => {
@@ -210,7 +246,10 @@ export const FormRoute = () => {
                         <Form.Item label="Coordinates" required>
                             <Row>
                                 <Space align='baseline'>
-                                    <Form.Item name='x' required>
+                                    <Form.Item name='x' rules={[{
+                                        required: true,
+                                        message: 'Please input X coordinate!',
+                                    }]}>
                                         <InputNumber placeholder='X' min={1} value={store.getState().page.instance.x}
                                                      initialValue={store.getState().page.instance.x}
                                                      onChange={e => {
@@ -218,7 +257,10 @@ export const FormRoute = () => {
                                                      }}
                                                      disabled={!store.getState().page.is_id_hidden}/>
                                     </Form.Item>
-                                    <Form.Item name='y' required>
+                                    <Form.Item name='y' rules={[{
+                                        required: true,
+                                        message: 'Please input Y coordinate!',
+                                    }]}>
                                         <InputNumber placeholder='Y' value={store.getState().page.instance.y}
                                                      initialValue={store.getState().page.instance.y}
                                                      onChange={e => {
@@ -243,7 +285,10 @@ export const FormRoute = () => {
                         <Form.Item label="From" required>
                             <Row>
                                 <Space>
-                                    <Form.Item name='fromId' hidden={page.modal_type !== ModalType.BETWEEN} required>
+                                    <Form.Item name='fromId' hidden={page.modal_type !== ModalType.BETWEEN} rules={[{
+                                        required: page.modal_type === ModalType.BETWEEN,
+                                        message: 'Please input From ID!',
+                                    }]}>
                                         <InputNumber placeholder='From ID' value={store.getState().page.instance.fromId}
                                                      initialValue={store.getState().page.instance.fromId}
                                                      onChange={e => {
@@ -251,7 +296,11 @@ export const FormRoute = () => {
                                                      }}
                                                      disabled={!store.getState().page.is_id_hidden}/>
                                     </Form.Item>
-                                    <Form.Item name='fromX' hidden={page.modal_type === ModalType.BETWEEN} required>
+                                    <Form.Item name='fromX' hidden={page.modal_type === ModalType.BETWEEN}
+                                               rules={[{
+                                        required: page.modal_type !== ModalType.BETWEEN,
+                                        message: 'Please input From X coordinate!',
+                                    }]}>
                                         <InputNumber placeholder='X' value={store.getState().page.instance.fromX}
                                                      initialValue={store.getState().page.instance.fromX}
                                                      onChange={e => {
@@ -259,7 +308,10 @@ export const FormRoute = () => {
                                                      }}
                                                      disabled={!store.getState().page.is_id_hidden}/>
                                     </Form.Item>
-                                    <Form.Item name='fromY' hidden={page.modal_type === ModalType.BETWEEN} required>
+                                    <Form.Item name='fromY' hidden={page.modal_type === ModalType.BETWEEN} rules={[{
+                                        required: page.modal_type !== ModalType.BETWEEN,
+                                        message: 'Please input From Y coordinate!',
+                                    }]}>
                                         <InputNumber placeholder='Y' value={store.getState().page.instance.fromY}
                                                      initialValue={store.getState().page.instance.fromY}
                                                      onChange={e => {
@@ -267,7 +319,10 @@ export const FormRoute = () => {
                                                      }}
                                                      disabled={!store.getState().page.is_id_hidden}/>
                                     </Form.Item>
-                                    <Form.Item name='fromZ' hidden={page.modal_type === ModalType.BETWEEN} required>
+                                    <Form.Item name='fromZ' hidden={page.modal_type === ModalType.BETWEEN} rules={[{
+                                        required: page.modal_type !== ModalType.BETWEEN,
+                                        message: 'Please input From Z coordinate!',
+                                    }]}>
                                         <InputNumber placeholder='Z' value={store.getState().page.instance.fromZ}
                                                      initialValue={store.getState().page.instance.fromZ}
                                                      onChange={e => {
@@ -280,7 +335,7 @@ export const FormRoute = () => {
                         </Form.Item>
                         <Form.Item label="To">
                             <Row>
-                                <Form.Item name='ToId' hidden={page.modal_type !== ModalType.BETWEEN} required>
+                                <Form.Item name='ToId' hidden={page.modal_type !== ModalType.BETWEEN}>
                                     <InputNumber placeholder='From ID' value={store.getState().page.instance.toId}
                                                  initialValue={store.getState().page.instance.toId}
                                                  onChange={e => {
@@ -326,8 +381,11 @@ export const FormRoute = () => {
                                 </Space>
                             </Row>
                         </Form.Item>
-                        <Form.Item name='distance' label="Distance" required>
-                            <InputNumber min={1} placeholder='Distance' value={store.getState().page.instance.distance}
+                        <Form.Item name='distance' label="Distance" rules={[{
+                            required: true,
+                            message: 'Please input distance!',
+                        }]}>
+                            <InputNumber min={2} placeholder='Distance' value={store.getState().page.instance.distance}
                                          initialValue={store.getState().page.instance.distance}
                                          onChange={e => {
                                              dispatch(setInstance({...store.getState().page.instance, distance: e}))
@@ -338,4 +396,4 @@ export const FormRoute = () => {
                 </Modal>
             </>
         );
-}
+    }

@@ -27,7 +27,7 @@ public class AdditionalRouteServiceResource {
                     .entity(routeDTO)
                     .build();
         } else {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(404).entity(ErrorDTO.builder()
                             .code(404)
                             .message("No routes were found")
                             .time(LocalDateTime.now())
@@ -61,7 +61,7 @@ public class AdditionalRouteServiceResource {
                     .entity(result)
                     .build();
         } else {
-            return Response.ok().entity(ErrorDTO.builder()
+            return Response.status(404).entity(ErrorDTO.builder()
                             .code(404)
                             .message("No routes were found")
                             .time(LocalDateTime.now())

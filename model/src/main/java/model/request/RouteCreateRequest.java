@@ -72,12 +72,20 @@ public class RouteCreateRequest implements Serializable {
     public boolean validate() {
         boolean requiredFields = name != null && !name.isBlank() &&
                 x != null && y != null &&
-                fromX != null && fromY != null && fromZ != null
-                && distance > 1;
+                distance > 1;
         boolean toField = true;
-        if (toName != null || toX != null || toY != null || toZ != null) {
-            toField = toName != null && toX != null && toY != null && toZ != null && !toName.isBlank();
+        boolean idsField = true;
+        if (fromId == null && toId == null) {
+            requiredFields = requiredFields && fromX != null && fromY != null && fromZ != null;
+            if (toName != null || toX != null || toY != null || toZ != null) {
+                toField = toName != null && toX != null && toY != null && toZ != null && !toName.isBlank();
+            }
+        } else if (fromId != null && toId != null) {
+            idsField = fromX == null && fromY == null && fromZ == null &&
+                toName == null && toX == null && toY == null && toZ == null;
+        } else {
+            return false;
         }
-        return requiredFields && toField;
+        return requiredFields && toField && idsField;
     }
 }

@@ -5,10 +5,12 @@ import model.entity.Location;
 import model.entity.NamedLocation;
 import model.entity.Route;
 import model.dto.RouteDTO;
+import org.springframework.stereotype.Component;
 
 import javax.ejb.Stateless;
 
 @Stateless
+@Component
 public class RouteDTOConverter {
 
     public Route convertTo(RouteDTO routeDTO) {

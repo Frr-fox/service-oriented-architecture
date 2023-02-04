@@ -40,4 +40,16 @@ public class Location implements Serializable {
         this.y_coordinate = fromY;
         this.z_coordinate = fromZ;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object.getClass() != Location.class) {
+            return false;
+        }
+        Location location = (Location) object;
+        return (this.getX_coordinate().equals(location.getX_coordinate()) &&
+                this.getY_coordinate().equals(location.getY_coordinate()) &&
+                this.getZ_coordinate().equals(location.getZ_coordinate())) ||
+                (this.getLocation_id() == location.getLocation_id());
+    }
 }

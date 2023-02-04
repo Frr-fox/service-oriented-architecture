@@ -1,6 +1,5 @@
 package com.itmo.soa.routeservice.service;
 
-import com.itmo.soa.routeservice.exception.RouteNotFoundException;
 import model.dto.*;
 import model.dto.filter.RouteFilterDTO;
 import model.request.RouteCreateRequest;

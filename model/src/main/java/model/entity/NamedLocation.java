@@ -47,4 +47,17 @@ public class NamedLocation implements Serializable {
         this.z_coordinate = toZ;
         this.name = toName;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object.getClass() != NamedLocation.class) {
+            return false;
+        }
+        NamedLocation location = (NamedLocation) object;
+        return (this.getX_coordinate().equals(location.getX_coordinate()) &&
+                this.getY_coordinate().equals(location.getY_coordinate()) &&
+                this.getZ_coordinate().equals(location.getZ_coordinate()) &&
+                this.getName().equals(location.getName())) ||
+                (this.getLocation_id() == location.getLocation_id());
+    }
 }

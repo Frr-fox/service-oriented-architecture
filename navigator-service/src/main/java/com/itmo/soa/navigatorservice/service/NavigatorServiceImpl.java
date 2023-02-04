@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Stateless
 public class NavigatorServiceImpl implements NavigatorService {
     private final Logger logger = LoggerFactory.getLogger(NavigatorServiceImpl.class);
-    private final String baseURL = "http://localhost:31470/api/v1/routes";
+    private final String baseURL = "https://localhost:31471/api/v1/routes";
 
     @Inject
     private ClientProvider clientProvider;
@@ -47,11 +47,12 @@ public class NavigatorServiceImpl implements NavigatorService {
     }
 
     @Override
-    public void createRouteBetweenLocations(Long idLocationFrom,
+    public boolean createRouteBetweenLocations(Long idLocationFrom,
                                             Long idLocationTo,
                                             Long distance,
                                             RouteCreateBetweenLocationsRequest request) {
         //todo: вызов rest api другого сервиса
+        logger.info(request.toString());
         Response response = clientProvider.getClient().target(baseURL)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(RouteCreateRequest.builder()
@@ -63,5 +64,6 @@ public class NavigatorServiceImpl implements NavigatorService {
                                         .distance(distance)
                                 .build(),
                         MediaType.APPLICATION_JSON));
+        return response.getStatus() == 200;
     }
 }

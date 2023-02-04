@@ -77,4 +77,6 @@ public class RouteDTO implements Serializable {
     @NonNull
     @Min(value = 2)
     private long distance;
+
+    private ErrorDTO error;
 }

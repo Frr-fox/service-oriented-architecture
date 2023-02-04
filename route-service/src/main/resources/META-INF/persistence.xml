@@ -9,16 +9,18 @@
         <class>model.entity.Location</class>
         <class>model.entity.NamedLocation</class>
         <class>model.entity.Route</class>
+        <class>model.entity.Ticket</class>
+        <class>model.entity.Passenger</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
-<!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/studs" />-->
-<!--            <property name="javax.persistence.jdbc.user" value="s284715" />-->
-<!--            <property name="javax.persistence.jdbc.password" value="mkU4nJVuW9oJfJzC" />-->
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres" />
-            <property name="javax.persistence.jdbc.user" value="postgres" />
-            <property name="javax.persistence.jdbc.password" value="access526#" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/studs" />
+            <property name="javax.persistence.jdbc.user" value="s284715" />
+            <property name="javax.persistence.jdbc.password" value="mkU4nJVuW9oJfJzC" />
+<!--            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres" />-->
+<!--            <property name="javax.persistence.jdbc.user" value="postgres" />-->
+<!--            <property name="javax.persistence.jdbc.password" value="access526#" />-->
             <property name="hibernate.show_sql" value="true" />
-            <property name="hibernate.hbm2ddl.auto" value="create" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
             <property name="hibernate.jpa.compliance.global_id_generators" value="false"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
         </properties>

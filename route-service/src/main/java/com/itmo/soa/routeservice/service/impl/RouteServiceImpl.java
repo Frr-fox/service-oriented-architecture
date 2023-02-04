@@ -1,6 +1,7 @@
 package com.itmo.soa.routeservice.service.impl;
 
-import com.itmo.soa.routeservice.exception.RouteNotFoundException;
+import com.itmo.soa.routeservice.repository.CoordinatedRepository;
+import model.exception.RouteNotFoundException;
 import com.itmo.soa.routeservice.filter.RouteFilter;
 import com.itmo.soa.routeservice.repository.LocationRepository;
 import com.itmo.soa.routeservice.repository.RouteRepository;
@@ -37,6 +38,9 @@ public class RouteServiceImpl implements RouteService {
     private LocationRepository locationRepository;
 
     @Inject
+    private CoordinatedRepository coordinatedRepository;
+
+    @Inject
     private RouteDTOConverter converter;
 
     @Inject
@@ -46,13 +50,29 @@ public class RouteServiceImpl implements RouteService {
     public boolean createRoute(RouteCreateRequest request) {
         boolean validated = request.validate();
         if (validated) {
+            Route route;
             if (request.getFromId() != null && request.getToId() != null) {
                 Location from = locationRepository.getLocationById(request.getFromId());
                 NamedLocation to = locationRepository.getNamedLocationById(request.getToId());
-                routeRepository.save(request.convertFromWithLocations(from, to));
+                if (from == null || to == null) {
+                    return false;
+                }
+                route = request.convertFromWithLocations(from, to);
             } else {
-                routeRepository.save(request.convertFrom());
+                route = request.convertFrom();
+                if (locationRepository.isPresent(request.getFromX(), request.getFromY(), request.getFromZ())) {
+                    route.setFrom(locationRepository.getByXAndYAndZ(request.getFromX(), request.getFromY(), request.getFromZ()).get(0));
+                }
+                if (locationRepository.isPresent(request.getToX(), request.getToY(), request.getToZ(), request.getToName())) {
+                    route.setTo(locationRepository.getByXAndYAndZAndName(request.getToX(), request.getToY(), request.getToZ(), request.getToName()).get(0));
+                }
             }
+            if (coordinatedRepository.isPresent(request.getX(), request.getY())) {
+                route.setCoordinates(coordinatedRepository.getByXAndY(request.getX(), request.getY()).get(0));
+            }
+            routeRepository.save(route);
+        } else {
+            logger.warn("Not validated");
         }
         return validated;
     }
@@ -86,6 +106,10 @@ public class RouteServiceImpl implements RouteService {
             }
             Route updatedRoute = request.convertFrom();
             updatedRoute.setId(routeId);
+            setExistingLocations(updatedRoute);
+            if (coordinatedRepository.isPresent(request.getX(), request.getY())) {
+                updatedRoute.setCoordinates(coordinatedRepository.getByXAndY(request.getX(), request.getY()).get(0));
+            }
             logger.info(updatedRoute.toString());
             routeRepository.update(updatedRoute);
             return true;
@@ -181,5 +205,15 @@ public class RouteServiceImpl implements RouteService {
             list.add(converter.convertFrom(route));
         }
         return new RouteSearchResponse(list, filterDTO.getPage());
+    }
+
+    private Route setExistingLocations(Route route) {
+        if (locationRepository.isPresent(route.getFrom().getX_coordinate(), route.getFrom().getY_coordinate(), route.getFrom().getZ_coordinate())) {
+            route.setFrom(locationRepository.getByXAndYAndZ(route.getFrom().getX_coordinate(), route.getFrom().getY_coordinate(), route.getFrom().getZ_coordinate()).get(0));
+        }
+        if (locationRepository.isPresent(route.getTo().getX_coordinate(), route.getTo().getY_coordinate(), route.getTo().getZ_coordinate(), route.getTo().getName())) {
+            route.setTo(locationRepository.getByXAndYAndZAndName(route.getTo().getX_coordinate(), route.getTo().getY_coordinate(), route.getTo().getZ_coordinate(), route.getTo().getName()).get(0));
+        }
+        return route;
     }
 }

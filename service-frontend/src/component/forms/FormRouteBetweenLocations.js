@@ -23,18 +23,16 @@ const FormRouteBetweenLocations = () => {
                 res => {
                     if (res.status === 200 && res.data.code === undefined) {
                         dispatch(setData(res.data));
+                        dispatch(setMessage("Routes between two specified locations are in the table!"))
+                        openNotification('success');
                     } else {
-                        dispatch(setMessage(res.data.message));
-                        if (res.data.code === 404) {
-                            openNotification('warning');
-                        } else {
-                            openNotification('error');
-                        }
+                        dispatch(setMessage("Something goes wrong"));
+                        openNotification('error');
                     }
                 }
             )
             .catch(err => {
-                dispatch(setMessage(err.message));
+                dispatch(setMessage(err.response.data.message));
                 openNotification('error');
             })
     }
