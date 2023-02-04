@@ -17,8 +17,8 @@ trip-service/mvnw
 trip-service/mvnw.cmd
 trip-service/HELP.md
 *.crt
-*.keystore
-*.truststore
+server.keystore
+server.truststore
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
