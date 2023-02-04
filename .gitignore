@@ -1,5 +1,4 @@
-target/
-.idea
+./.idea
 model/target
 model/.mvn
 navigator-service/target
@@ -18,6 +17,7 @@ trip-service/mvnw
 trip-service/mvnw.cmd
 trip-service/HELP.md
 *.crt
+*.keystore
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
